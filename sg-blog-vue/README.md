@@ -1,6 +1,10 @@
 
 
-## Build Setup
+## 博客前端工程
+
+web端使用 Vue + ElementUi
+
+### 运行步骤
 
 ``` bash
 # install dependencies
