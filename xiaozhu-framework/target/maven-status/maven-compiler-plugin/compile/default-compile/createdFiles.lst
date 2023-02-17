@@ -45,6 +45,7 @@ com\xiaozhu\service\UserService.class
 com\xiaozhu\utils\PathUtils.class
 com\xiaozhu\domain\vo\AdminUserInfoVo.class
 com\xiaozhu\service\impl\TagServiceImpl.class
+com\xiaozhu\domain\vo\ExcelCategoryVo.class
 com\xiaozhu\domain\vo\RoutersVo.class
 com\xiaozhu\domain\vo\LinkVo.class
 com\xiaozhu\service\MenuService.class
