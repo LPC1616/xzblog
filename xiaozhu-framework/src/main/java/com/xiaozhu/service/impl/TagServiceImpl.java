@@ -17,6 +17,8 @@ import com.xiaozhu.utils.BeanCopyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * 标签(Tag)表服务实现类
  *
@@ -80,6 +82,16 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         Tag tag = BeanCopyUtils.copyBean(tagUpdateVo, Tag.class);
         updateById(tag);
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public List<TagUpdateVo> listAllTag() {
+        LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Tag::getDelFlag, 0);
+        queryWrapper.select(Tag::getId,Tag::getName);
+        List<Tag> list = list(queryWrapper);
+        List<TagUpdateVo> tagUpdateVos = BeanCopyUtils.copyBeanList(list, TagUpdateVo.class);
+        return tagUpdateVos;
     }
 
 

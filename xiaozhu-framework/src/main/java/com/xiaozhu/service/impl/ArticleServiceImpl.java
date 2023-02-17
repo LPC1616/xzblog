@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaozhu.constants.SystemConstants;
 import com.xiaozhu.domain.ResponseResult;
+import com.xiaozhu.domain.dto.AddArticleDto;
 import com.xiaozhu.domain.entity.Article;
+import com.xiaozhu.domain.entity.ArticleTag;
 import com.xiaozhu.domain.entity.Category;
 import com.xiaozhu.domain.vo.ArticleDetailVo;
 import com.xiaozhu.domain.vo.ArticleListVo;
@@ -13,12 +15,14 @@ import com.xiaozhu.domain.vo.HotArticleVo;
 import com.xiaozhu.domain.vo.PageVo;
 import com.xiaozhu.mapper.ArticleMapper;
 import com.xiaozhu.service.ArticleService;
+import com.xiaozhu.service.ArticleTagService;
 import com.xiaozhu.service.CategoryService;
 import com.xiaozhu.utils.BeanCopyUtils;
 import com.xiaozhu.utils.RedisCache;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private ArticleTagService articleTagService;
 
     @Override
     public ResponseResult hotArticleList() {
@@ -100,6 +107,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public ResponseResult updateViewCount(Long id) {
         //更新redis中对应 id的浏览量
         redisCache.incrementCacheMapValue("article:viewCount",id.toString(),1);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult add(AddArticleDto articleDto) {
+        Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        save(article);
+
+        List<ArticleTag> articleTags = articleDto.getTags().stream()
+                .map(tagId -> new ArticleTag(article.getId(), tagId))
+                .collect(Collectors.toList());
+
+        articleTagService.saveBatch(articleTags);
         return ResponseResult.okResult();
     }
 }

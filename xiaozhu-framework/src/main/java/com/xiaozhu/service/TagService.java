@@ -7,6 +7,8 @@ import com.xiaozhu.domain.entity.Tag;
 import com.xiaozhu.domain.vo.PageVo;
 import com.xiaozhu.domain.vo.TagUpdateVo;
 
+import java.util.List;
+
 
 /**
  * 标签(Tag)表服务接口
@@ -26,4 +28,6 @@ public interface TagService extends IService<Tag> {
     ResponseResult getTagInfo(Long id);
 
     ResponseResult updateTag(TagUpdateVo tagUpdateVo);
+
+    List<TagUpdateVo> listAllTag();
 }
