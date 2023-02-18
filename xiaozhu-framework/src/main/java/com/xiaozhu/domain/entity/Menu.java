@@ -5,6 +5,7 @@ import java.util.Date;
 import java.io.Serializable;
 import java.util.List;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,6 +42,7 @@ public class Menu  {
     private String component;
     //是否为外链（0是 1否）
     private Integer isFrame;
+
     //菜单类型（M目录 C菜单 F按钮）
     private String menuType;
     //菜单状态（0显示 1隐藏）
@@ -51,13 +53,21 @@ public class Menu  {
     private String perms;
     //菜单图标
     private String icon;
+
     //创建者
+    @TableField(fill = FieldFill.INSERT)
     private Long createBy;
+
     //创建时间
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
+
     //更新者
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateBy;
+
     //更新时间
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
     //备注
     private String remark;

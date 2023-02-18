@@ -3,13 +3,20 @@ package com.xiaozhu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaozhu.constants.SystemConstants;
+import com.xiaozhu.domain.ResponseResult;
+import com.xiaozhu.domain.dto.MenuDto;
 import com.xiaozhu.domain.entity.Menu;
+import com.xiaozhu.domain.vo.MenuVo;
+import com.xiaozhu.enums.AppHttpCodeEnum;
 import com.xiaozhu.mapper.MenuMapper;
 import com.xiaozhu.service.MenuService;
+import com.xiaozhu.utils.BeanCopyUtils;
 import com.xiaozhu.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -20,6 +27,8 @@ import java.util.stream.Collectors;
  */
 @Service("menuService")
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
+
+    private MenuMapper menuMapper;
 
     @Override
     public List<String> selectPermsByUserId(Long id) {
@@ -55,6 +64,71 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         //先找出第一层的菜单  然后去找他们的子菜单设置到children属性中
         List<Menu> menuTree = builderMenuTree(menus,0L);
         return menuTree;
+    }
+
+    @Override
+    public ResponseResult getMenuList(String status, String menuName) {
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StringUtils.hasText(status), Menu::getStatus, status)
+                .like(StringUtils.hasText(menuName), Menu::getMenuName, menuName)
+                .orderByAsc(Menu::getParentId, Menu::getOrderNum);
+        List<Menu> menus = list(queryWrapper);
+        List<MenuVo> menuVos = BeanCopyUtils.copyBeanList(menus, MenuVo.class);
+        return ResponseResult.okResult(menuVos);
+    }
+
+    @Override
+    public ResponseResult addMenu(MenuDto menuDto) {
+        Menu menu = BeanCopyUtils.copyBean(menuDto, Menu.class);
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Menu::getMenuName, menuDto.getMenuName());
+        Menu one = getOne(queryWrapper);
+        if(!Objects.isNull(one)){
+            return ResponseResult.errorResult(AppHttpCodeEnum.ADD_MENU_FAIL);
+        }
+        save(menu);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult getMenuById(Long id) {
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Menu::getId, id);
+        Menu menu = getOne(queryWrapper);
+//        将Menu对象转换为MenuVo对象
+        MenuVo menuVo = BeanCopyUtils.copyBean(menu, MenuVo.class);
+        return ResponseResult.okResult(menuVo);
+    }
+
+    @Override
+    public ResponseResult updateMenu(MenuDto menuDto) {
+        //        1.判断LinkDto对象值是否为空
+        if (!StringUtils.hasText(menuDto.getMenuName()) ||
+                !StringUtils.hasText(menuDto.getMenuType()) ||
+                !StringUtils.hasText(String.valueOf(menuDto.getStatus())) ||
+                !StringUtils.hasText(menuDto.getPath()) ||
+                !StringUtils.hasText(String.valueOf(menuDto.getOrderNum())) ||
+                !StringUtils.hasText(menuDto.getIcon())) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.CONTENT_NOT_NULL);
+        }
+
+        Menu menu = BeanCopyUtils.copyBean(menuDto, Menu.class);
+        updateById(menu);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult deleteMenu(Long id) {
+        //1.查询当前菜单是否有子菜单，如果有就不允许删除
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Menu::getParentId, id);
+        List<Menu> menus = menuMapper.selectList(queryWrapper);
+        if (!Objects.isNull(menus) && menus.size() != 0) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
+        }
+
+        removeById(id);
+        return ResponseResult.okResult();
     }
 
     private List<Menu> builderMenuTree(List<Menu> menus, Long parentId) {

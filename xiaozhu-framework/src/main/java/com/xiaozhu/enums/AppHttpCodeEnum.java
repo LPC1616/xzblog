@@ -11,7 +11,7 @@ public enum AppHttpCodeEnum {
     PHONENUMBER_EXIST(502,"手机号已存在"),
     EMAIL_EXIST(503, "邮箱已存在"),
     REQUIRE_USERNAME(504, "必需填写用户名"),
-    CONTENT_NOT_NULL(506, "评论内容不能为空"),
+    CONTENT_NOT_NULL(506, "内容不能为空"),
     FILE_TYPE_ERROR(507, "文件类型错误，请上传png文件"),
     USERNAME_NOT_NULL(508, "用户名不能为空"),
     NICKNAME_NOT_NULL(509, "昵称不能为空"),
@@ -20,7 +20,9 @@ public enum AppHttpCodeEnum {
     NICKNAME_EXIST(512, "昵称已存在"),
     LOGIN_ERROR(505,"用户名或密码错误"),
     TAGNAME_NOT_NULL(513, "标签内容不能为空"),
-    REMARK_NOT_NULL(514, "备注不能为空");
+    REMARK_NOT_NULL(514, "备注不能为空"),
+    ADD_MENU_FAIL(515, "该菜单已存在"),
+    DELETE_MENU_REFUSE(516, "不允许删除该菜单" );
 
 
 
