@@ -6,13 +6,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaozhu.constants.SystemConstants;
 import com.xiaozhu.domain.ResponseResult;
 import com.xiaozhu.domain.dto.AddArticleDto;
+import com.xiaozhu.domain.dto.AdminArticleDto;
+import com.xiaozhu.domain.dto.ArticleDto;
 import com.xiaozhu.domain.entity.Article;
 import com.xiaozhu.domain.entity.ArticleTag;
 import com.xiaozhu.domain.entity.Category;
-import com.xiaozhu.domain.vo.ArticleDetailVo;
-import com.xiaozhu.domain.vo.ArticleListVo;
-import com.xiaozhu.domain.vo.HotArticleVo;
-import com.xiaozhu.domain.vo.PageVo;
+import com.xiaozhu.domain.entity.Tag;
+import com.xiaozhu.domain.vo.*;
 import com.xiaozhu.mapper.ArticleMapper;
 import com.xiaozhu.service.ArticleService;
 import com.xiaozhu.service.ArticleTagService;
@@ -23,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +122,62 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .collect(Collectors.toList());
 
         articleTagService.saveBatch(articleTags);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult getArticleList(Integer pageNum, Integer pageSize, ArticleDto articleDto) {
+        //模糊查询
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.hasText(articleDto.getTitle()), Article::getTitle, articleDto.getTitle());
+        queryWrapper.like(StringUtils.hasText(articleDto.getSummary()), Article::getSummary, articleDto.getSummary());
+
+        queryWrapper.eq(Article::getStatus, SystemConstants.ARTICLE_STATUS_NORMAL);
+        //分页查询
+        Page<Article> page = new Page<>(pageNum, pageSize);
+        page(page, queryWrapper);
+
+        List<Article> articles = page.getRecords();
+        List<ArticleDetailVo> articleDetailVos = BeanCopyUtils.copyBeanList(articles, ArticleDetailVo.class);
+        PageVo pageVo = new PageVo(articleDetailVos, page.getTotal());
+        return ResponseResult.okResult(pageVo);
+    }
+
+    @Override
+    public ResponseResult getArticleById(Long id) {
+        Article article = getById(id);
+        UpdateArticleVo updateArticleVo = BeanCopyUtils.copyBean(article, UpdateArticleVo.class);
+        List<Long> tags = articleTagService.getTagList(id);
+        updateArticleVo.setTags(tags);
+        return ResponseResult.okResult(updateArticleVo);
+    }
+
+    @Override
+    public ResponseResult updateArticle(AdminArticleDto articleDto) {
+        Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        List<Long> tagList = articleTagService.getTagList(article.getId());
+        List<Long> tags = article.getTags();
+        for (Long tag : tags) {
+            if (!tagList.contains(tag)){
+                articleTagService.save(new ArticleTag(article.getId(), tag));
+            }
+        }
+        for (Long tag : tagList) {
+            if(!tags.contains(tag)){
+                LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(ArticleTag::getArticleId, article.getId());
+                queryWrapper.eq(ArticleTag::getTagId, tag);
+                articleTagService.remove(queryWrapper);
+            }
+        }
+        updateById(article);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult deleteArticle(Long id) {
+        removeById(id);
+        articleTagService.removeById(id);
         return ResponseResult.okResult();
     }
 }

@@ -22,8 +22,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @NoArgsConstructor
 @TableName("xz_article_tag")
 public class ArticleTag implements Serializable{
-    //文章id@TableId
-    @TableId(type = IdType.AUTO)
+
     private Long articleId;
     //标签id@TableId
     private Long tagId;

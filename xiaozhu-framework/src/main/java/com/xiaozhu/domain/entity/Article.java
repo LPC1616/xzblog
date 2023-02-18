@@ -2,6 +2,7 @@ package com.xiaozhu.domain.entity;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -64,6 +65,9 @@ public class Article {
     private Date updateTime;
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;
+
+    @TableField(exist = false)
+    private List<Long> tags;
 
     public Article(Long id, long viewCount) {
         this.id = id;

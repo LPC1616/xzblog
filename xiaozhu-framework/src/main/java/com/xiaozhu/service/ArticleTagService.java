@@ -3,6 +3,8 @@ package com.xiaozhu.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaozhu.domain.entity.ArticleTag;
 
+import java.util.List;
+
 
 /**
  * 文章标签关联表(ArticleTag)表服务接口
@@ -12,4 +14,5 @@ import com.xiaozhu.domain.entity.ArticleTag;
  */
 public interface ArticleTagService extends IService<ArticleTag> {
 
+    List<Long> getTagList(Long id);
 }
