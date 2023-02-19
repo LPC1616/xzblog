@@ -22,7 +22,9 @@ public enum AppHttpCodeEnum {
     TAGNAME_NOT_NULL(513, "标签内容不能为空"),
     REMARK_NOT_NULL(514, "备注不能为空"),
     ADD_MENU_FAIL(515, "该菜单已存在"),
-    DELETE_MENU_REFUSE(516, "不允许删除该菜单" );
+    DELETE_MENU_REFUSE(516, "不允许删除该菜单" ),
+    ROLE_INFO_EXIST(517, "角色已存在"),
+    ROLEKEY_INFO_EXIST(518, "key已存在");
 
 
 

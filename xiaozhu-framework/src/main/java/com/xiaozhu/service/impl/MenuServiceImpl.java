@@ -6,6 +6,7 @@ import com.xiaozhu.constants.SystemConstants;
 import com.xiaozhu.domain.ResponseResult;
 import com.xiaozhu.domain.dto.MenuDto;
 import com.xiaozhu.domain.entity.Menu;
+import com.xiaozhu.domain.vo.MenuTreeVo;
 import com.xiaozhu.domain.vo.MenuVo;
 import com.xiaozhu.enums.AppHttpCodeEnum;
 import com.xiaozhu.mapper.MenuMapper;
@@ -131,12 +132,64 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         return ResponseResult.okResult();
     }
 
+    public List<Menu> selectAllMenuList() {
+
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        //menuName模糊查询
+//        queryWrapper.like(StringUtils.hasText(menu.getMenuName()),Menu::getMenuName,menu.getMenuName());
+//        queryWrapper.eq(StringUtils.hasText(menu.getStatus()),Menu::getStatus,menu.getStatus());
+        //排序 parent_id和order_num
+        queryWrapper.orderByAsc(Menu::getParentId,Menu::getOrderNum);
+        List<Menu> menus = list(queryWrapper);
+        return menus;
+    }
+
+    public List<Menu> selectMenuList(Menu menu) {
+
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        //menuName模糊查询
+        queryWrapper.like(StringUtils.hasText(menu.getMenuName()),Menu::getMenuName,menu.getMenuName());
+        queryWrapper.eq(StringUtils.hasText(menu.getStatus()),Menu::getStatus,menu.getStatus());
+        //排序 parent_id和order_num
+        queryWrapper.orderByAsc(Menu::getParentId,Menu::getOrderNum);
+        List<Menu> menus = list(queryWrapper);
+        return menus;
+    }
+
+    @Override
+    public ResponseResult getMenuTree() {
+        List<Menu> menus = selectAllMenuList();
+        List<MenuTreeVo> menuTrees =  buildMenuSelectTree(menus);
+        return ResponseResult.okResult(menuTrees);
+    }
+
+    @Override
+    public ResponseResult roleMenuTreeselect(Long id) {
+        List<Menu> menus = selectMenuList(new Menu());
+//        List<Menu> menus = selectRouterMenuTreeByUserId(id);
+        List<MenuTreeVo> menuTreeVos = buildMenuSelectTree(menus);
+        return ResponseResult.okResult(menuTreeVos);
+    }
+
     private List<Menu> builderMenuTree(List<Menu> menus, Long parentId) {
         List<Menu> menuTree = menus.stream()
                 .filter(menu -> menu.getParentId().equals(parentId))
                 .map(menu -> menu.setChildren(getChildren(menu, menus)))
                 .collect(Collectors.toList());
         return menuTree;
+    }
+
+    public  List<MenuTreeVo> buildMenuSelectTree(List<Menu> menus) {
+        List<MenuTreeVo> MenuTreeVos = menus.stream()
+                .map(m -> new MenuTreeVo(m.getId(), m.getMenuName(), m.getParentId(), null))
+                .collect(Collectors.toList());
+        List<MenuTreeVo> options = MenuTreeVos.stream()
+                .filter(o -> o.getParentId().equals(0L))
+                .map(o -> o.setChildren(getChildList(MenuTreeVos, o)))
+                .collect(Collectors.toList());
+
+
+        return options;
     }
 
     /**
@@ -151,5 +204,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
                 .map(m->m.setChildren(getChildren(m,menus)))
                 .collect(Collectors.toList());
         return childrenList;
+    }
+
+    private static List<MenuTreeVo> getChildList(List<MenuTreeVo> list, MenuTreeVo option) {
+        List<MenuTreeVo> options = list.stream()
+                .filter(o -> Objects.equals(o.getParentId(), option.getId()))
+                .map(o -> o.setChildren(getChildList(list, o)))
+                .collect(Collectors.toList());
+        return options;
+
     }
 }

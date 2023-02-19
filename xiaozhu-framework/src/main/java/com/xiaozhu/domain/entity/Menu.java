@@ -63,11 +63,11 @@ public class Menu  {
     private Date createTime;
 
     //更新者
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.UPDATE)
     private Long updateBy;
 
     //更新时间
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
     //备注
     private String remark;

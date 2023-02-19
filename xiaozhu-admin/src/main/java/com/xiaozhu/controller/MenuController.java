@@ -37,4 +37,14 @@ public class MenuController {
     public ResponseResult deleteMenu(@PathVariable Long id){
         return menuService.deleteMenu(id);
     }
+
+    @GetMapping("/treeselect")
+    public ResponseResult getMenuTree(){
+        return menuService.getMenuTree();
+    }
+
+    @GetMapping("/roleMenuTreeselect/{id}")
+    public ResponseResult roleMenuTreeselect(@PathVariable Long id){
+        return menuService.roleMenuTreeselect(id);
+    }
 }
