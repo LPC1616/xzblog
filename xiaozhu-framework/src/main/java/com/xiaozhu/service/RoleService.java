@@ -17,6 +17,8 @@ import java.util.List;
  */
 public interface RoleService extends IService<Role> {
 
+    List<Role> getAllRoleList();
+
     List<String> selectRoleKeyByUserId(Long id);
 
     ResponseResult getAllRoleByPage(Integer pageNum, Integer pageSize, RoleDto roleDto);

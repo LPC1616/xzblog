@@ -24,7 +24,8 @@ public enum AppHttpCodeEnum {
     ADD_MENU_FAIL(515, "该菜单已存在"),
     DELETE_MENU_REFUSE(516, "不允许删除该菜单" ),
     ROLE_INFO_EXIST(517, "角色已存在"),
-    ROLEKEY_INFO_EXIST(518, "key已存在");
+    ROLEKEY_INFO_EXIST(518, "key已存在"),
+    DELETE_USER_REFUSE(519, "不允许删除该用户");
 
 
 

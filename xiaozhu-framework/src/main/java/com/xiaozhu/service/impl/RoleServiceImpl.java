@@ -45,6 +45,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     private RoleMapper roleMapper;
 
     @Override
+    public List<Role> getAllRoleList() {
+        List<Role> roles = roleMapper.selectList(null);
+        return roles;
+    }
+
+    @Override
     public List<String> selectRoleKeyByUserId(Long id) {
         //判断是否是管理员 如果是返回集合中只需要有admin
         if(id == 1L){
