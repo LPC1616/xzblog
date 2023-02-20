@@ -27,7 +27,9 @@ public enum AppHttpCodeEnum {
     ROLEKEY_INFO_EXIST(518, "key已存在"),
     DELETE_USER_REFUSE(519, "不允许删除该用户"),
     CATEGORY_IS_EXIST(520, "分类已存在"),
-    DELETE_CATEGORY_FAIL(521, "删除类别失败");
+    DELETE_CATEGORY_FAIL(521, "删除类别失败"),
+    LINK_IS_EXIST(522, "友链已存在"),
+    DELETE_LINK_FAIL(523, "友链删除失败");
 
 
 

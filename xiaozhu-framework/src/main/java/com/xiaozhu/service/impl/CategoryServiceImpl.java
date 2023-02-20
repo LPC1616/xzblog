@@ -73,7 +73,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         queryWrapper.eq(StringUtils.hasText(categoryDto.getStatus()), Category::getStatus, categoryDto.getStatus());
         queryWrapper.like(StringUtils.hasText(categoryDto.getName()), Category::getName, categoryDto.getName());
 
-        Page<Category> page = new Page<>();
+        Page<Category> page = new Page<>(pageNum,pageSize);
         page(page, queryWrapper);
 
         List<Category> categories = page.getRecords();

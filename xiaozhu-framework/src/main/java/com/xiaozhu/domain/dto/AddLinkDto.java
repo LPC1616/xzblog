@@ -1,4 +1,4 @@
-package com.xiaozhu.domain.vo;
+package com.xiaozhu.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinkVo {
-    private Long id;
-
+public class AddLinkDto {
     private String name;
 
     private String status;

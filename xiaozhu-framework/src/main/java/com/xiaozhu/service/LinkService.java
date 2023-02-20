@@ -2,6 +2,8 @@ package com.xiaozhu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaozhu.domain.ResponseResult;
+import com.xiaozhu.domain.dto.AddLinkDto;
+import com.xiaozhu.domain.dto.LinkDto;
 import com.xiaozhu.domain.entity.Link;
 
 
@@ -14,4 +16,14 @@ import com.xiaozhu.domain.entity.Link;
 public interface LinkService extends IService<Link> {
 
     ResponseResult getAllLink();
+
+    ResponseResult getAllLinkByAdmin(Integer pageNum, Integer pageSize, LinkDto linkDto);
+
+    ResponseResult addLink(AddLinkDto addLinkDto);
+
+    ResponseResult getLinkOneById(Long id);
+
+    ResponseResult updateLink(LinkDto linkDto);
+
+    ResponseResult deleteLink(Long id);
 }
