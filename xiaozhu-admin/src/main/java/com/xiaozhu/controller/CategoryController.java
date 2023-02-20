@@ -3,6 +3,7 @@ package com.xiaozhu.controller;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.xiaozhu.domain.ResponseResult;
+import com.xiaozhu.domain.dto.CategoryDto;
 import com.xiaozhu.domain.entity.Category;
 import com.xiaozhu.domain.vo.CategoryVo;
 import com.xiaozhu.domain.vo.ExcelCategoryVo;
@@ -12,9 +13,7 @@ import com.xiaozhu.utils.BeanCopyUtils;
 import com.xiaozhu.utils.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -24,7 +23,64 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
-    
+
+    /**
+     * 查询文章类别列表
+     * @param pageNum     页面num
+     * @param pageSize    页面大小
+     * @param categoryDto 类别dto
+     * @return {@link ResponseResult}
+     */
+    @GetMapping("/list")
+    public ResponseResult getArticleCategoryList(Integer pageNum, Integer pageSize, CategoryDto categoryDto) {
+        return categoryService.getArticleCategoryList(pageNum, pageSize, categoryDto);
+    }
+
+    /**
+     * 添加类别
+     *
+     * @param categoryDto 类别dto
+     * @return {@link ResponseResult}
+     */
+    @PostMapping
+    public ResponseResult addCategory(@RequestBody CategoryDto categoryDto){
+        return categoryService.addCategory(categoryDto);
+    }
+
+    /**
+     * 通过id查询分类
+     * @param id id
+     * @return {@link ResponseResult}
+     */
+    @GetMapping("/{id}")
+    public ResponseResult getCategoryOneById(@PathVariable Long id){
+        return categoryService.getCategoryOneById(id);
+    }
+
+    /**
+     * 修改文章分类信息
+     * @param categoryDto 类别dto
+     * @return {@link ResponseResult}
+     */
+    @PutMapping
+    public ResponseResult updateCategory(@RequestBody CategoryDto categoryDto){
+        return categoryService.updateCategory(categoryDto);
+    }
+
+    /**
+     * 删除文章分类
+     *
+     * @param id id
+     * @return {@link ResponseResult}
+     */
+    @DeleteMapping("/{id}")
+    public ResponseResult deleteCategory(@PathVariable Long id){
+        return categoryService.deleteCategory(id);
+    }
+
+
+
+
     @GetMapping("/listAllCategory")
     public ResponseResult listAllCategory(){
         List<CategoryVo> list = categoryService.listAllCategory();
